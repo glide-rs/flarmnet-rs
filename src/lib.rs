@@ -1,5 +1,35 @@
 use encoding_rs::mem::decode_latin1;
+use std::ops::Range;
 use thiserror::Error;
+
+// field lengths in decoded characters
+const FLARM_ID_LENGTH: usize = 6;
+const PILOT_NAME_LENGTH: usize = 21;
+const AIRFIELD_LENGTH: usize = 21;
+const PLANE_TYPE_LENGTH: usize = 21;
+const REGISTRATION_LENGTH: usize = 7;
+const CALL_SIGN_LENGTH: usize = 3;
+const FREQUENCY_LENGTH: usize = 7;
+
+// field offsets in bytes
+const FLARM_ID_START: usize = 0;
+const PILOT_NAME_START: usize = FLARM_ID_START + FLARM_ID_LENGTH * 2;
+const AIRFIELD_START: usize = PILOT_NAME_START + PILOT_NAME_LENGTH * 2;
+const PLANE_TYPE_START: usize = AIRFIELD_START + AIRFIELD_LENGTH * 2;
+const REGISTRATION_START: usize = PLANE_TYPE_START + PLANE_TYPE_LENGTH * 2;
+const CALL_SIGN_START: usize = REGISTRATION_START + REGISTRATION_LENGTH * 2;
+const FREQUENCY_START: usize = CALL_SIGN_START + CALL_SIGN_LENGTH * 2;
+
+const LINE_LENGTH: usize = FREQUENCY_START + FREQUENCY_LENGTH * 2;
+
+// field ranges in bytes
+const FLARM_ID_RANGE: Range<usize> = FLARM_ID_START..PILOT_NAME_START;
+const PILOT_NAME_RANGE: Range<usize> = PILOT_NAME_START..AIRFIELD_START;
+const AIRFIELD_RANGE: Range<usize> = AIRFIELD_START..PLANE_TYPE_START;
+const PLANE_TYPE_RANGE: Range<usize> = PLANE_TYPE_START..REGISTRATION_START;
+const REGISTRATION_RANGE: Range<usize> = REGISTRATION_START..CALL_SIGN_START;
+const CALL_SIGN_RANGE: Range<usize> = CALL_SIGN_START..FREQUENCY_START;
+const FREQUENCY_RANGE: Range<usize> = FREQUENCY_START..LINE_LENGTH;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Record {
@@ -84,21 +114,21 @@ pub fn decode_file(file: &str) -> Result<DecodedFile, DecodeError> {
 /// ```
 pub fn decode_record(line: &str) -> Result<Record, DecodeError> {
     let line_length = line.len();
-    if line_length != 172 {
+    if line_length != LINE_LENGTH {
         return Err(DecodeError::UnexpectedLineLength(line_length));
     }
 
-    let flarm_id = decode_str(&line[0..12])?;
+    let flarm_id = decode_str(&line[FLARM_ID_RANGE])?;
     if u32::from_str_radix(&flarm_id, 16).is_err() {
         return Err(DecodeError::InvalidFlarmId(flarm_id));
     }
 
-    let pilot_name = decode_str(&line[12..54])?;
-    let airfield = decode_str(&line[54..96])?;
-    let plane_type = decode_str(&line[96..138])?;
-    let registration = decode_str(&line[138..152])?;
-    let call_sign = decode_str(&line[152..158])?;
-    let frequency = decode_str(&line[158..172])?;
+    let pilot_name = decode_str(&line[PILOT_NAME_RANGE])?;
+    let airfield = decode_str(&line[AIRFIELD_RANGE])?;
+    let plane_type = decode_str(&line[PLANE_TYPE_RANGE])?;
+    let registration = decode_str(&line[REGISTRATION_RANGE])?;
+    let call_sign = decode_str(&line[CALL_SIGN_RANGE])?;
+    let frequency = decode_str(&line[FREQUENCY_RANGE])?;
 
     Ok(Record {
         flarm_id,
