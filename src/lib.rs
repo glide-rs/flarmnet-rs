@@ -1,7 +1,9 @@
 mod decode;
+mod encode;
 mod fields;
 
 pub use decode::*;
+pub use encode::*;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Record {
@@ -12,4 +14,10 @@ pub struct Record {
     pub registration: String,
     pub call_sign: String,
     pub frequency: String,
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct File {
+    pub version: u32,
+    pub records: Vec<Record>,
 }

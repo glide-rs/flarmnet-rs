@@ -60,13 +60,13 @@ pub fn decode_file(file: &str) -> Result<DecodedFile, DecodeError> {
 ///
 /// ```
 /// # use flarmnet::Record;
-/// let line = "334545334337202020202020202020202020202020202020202020442d303831362020202020202020202020202020204c5336612020202020202020202020202020202020442d30383136205347203133302e353330";
+/// let line = "334545334337546f62696173204269656e69656b2020202020202045444b4120202020202020202020202020202020204c5336612020202020202020202020202020202020442d30383136205347203133302e353330";
 ///
 /// let result = flarmnet::decode_record(line);
 /// assert_eq!(result.unwrap(), Record {
 ///     flarm_id: "3EE3C7".to_string(),
-///     pilot_name: "".to_string(),
-///     airfield: "D-0816".to_string(),
+///     pilot_name: "Tobias Bieniek".to_string(),
+///     airfield: "EDKA".to_string(),
 ///     plane_type: "LS6a".to_string(),
 ///     registration: "D-0816".to_string(),
 ///     call_sign: "SG".to_string(),
