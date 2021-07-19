@@ -3,12 +3,6 @@ flarmnet
 
 [FlarmNet] file decoder/encoder for [Rust]
 
-The `FlatProjection` struct can by used to project geographical
-coordinates from [WGS84] into a cartesian coordinate system.
-In the projected form approximated distance and bearing calculations
-can be performed much faster than on a sphere. The precision of these
-calculations is very precise for distances up to about 500 km.
-
 [FlarmNet]: https://www.flarmnet.org/
 [Rust]: https://www.rust-lang.org/
 
