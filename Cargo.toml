@@ -1,6 +1,11 @@
 [package]
 name = "flarmnet"
 version = "0.1.0"
+description = "FlarmNet file decoder/encoder"
+authors = ["Tobias Bieniek <tobias.bieniek@gmail.com>"]
+license = "MIT/Apache-2.0"
+repository = "https://github.com/glide-rs/flarmnet-rs.git"
+keywords = ["flarm", "flarmnet", "ogn", "glider", "gliding"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
