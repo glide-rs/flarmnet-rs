@@ -85,5 +85,5 @@ pub fn encode_file(file: &File) -> Result<String, EncodeError> {
 
     let xml = String::from_utf8(writer.into_inner().into_inner())?;
 
-    Ok(encrypt(&xml))
+    Ok(encrypt(&xml)?)
 }

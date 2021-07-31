@@ -1,12 +1,15 @@
 use crate::lx::cipher;
 use crate::Record;
 use minidom::{Element, NSChoice};
+use std::string::FromUtf8Error;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum DecodeError {
     #[error(transparent)]
     Xml(#[from] minidom::Error),
+    #[error(transparent)]
+    Utf8(#[from] FromUtf8Error),
     #[error("missing XML element: {0}")]
     MissingElement(String),
     #[error("missing file version")]
@@ -57,7 +60,7 @@ pub struct DecodedFile {
 /// assert_eq!(result.records.iter().filter(|it| it.is_ok()).count(), 3);
 /// ```
 pub fn decode_file(file: &str) -> Result<DecodedFile, DecodeError> {
-    let decrypted = cipher::decrypt(file);
+    let decrypted = cipher::decrypt(file)?;
 
     let root: Element = decrypted.parse()?;
     if root.name() != "FLARMNET" {
@@ -175,7 +178,8 @@ mod tests {
             r#"<?xml version="1.0" encoding="UTF-8"?>
                 <FOO>
                 </FOO>"#,
-        );
+        )
+        .unwrap();
         assert_debug_snapshot!(decode_file(&file).unwrap_err(), @r###"
         MissingElement(
             "FLARMNET",
@@ -189,7 +193,8 @@ mod tests {
             r#"<?xml version="1.0" encoding="UTF-8"?>
                 <FLARMNET>
                 </FLARMNET>"#,
-        );
+        )
+        .unwrap();
         assert_debug_snapshot!(decode_file(&file).unwrap_err(), @"MissingVersion");
     }
 
@@ -199,7 +204,8 @@ mod tests {
             r#"<?xml version="1.0" encoding="UTF-8"?>
                 <FLARMNET Version="foo">
                 </FLARMNET>"#,
-        );
+        )
+        .unwrap();
         assert_debug_snapshot!(decode_file(&file).unwrap_err(), @r###"
         InvalidVersion(
             "foo",
