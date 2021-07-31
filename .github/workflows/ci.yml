@@ -7,39 +7,40 @@ on:
   pull_request:
 
 jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: rustup set profile minimal
+      - run: rustup show
+      - run: cargo check --all
+
   tests:
     name: Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: rustup set profile minimal
+      - run: rustup show
+      - run: cargo test --all
 
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: 1.53.0
-          override: true
-          components: rustfmt, clippy
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: rustup set profile minimal
+      - run: rustup show
+      - run: rustup component add rustfmt
+      - run: cargo fmt --all -- --check
 
-      - name: cargo fmt
-        uses: actions-rs/cargo@v1
-        with:
-            command: fmt
-            args: --all -- --check
-
-      - name: cargo build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --all
-
-      - name: cargo clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings
-
-      - name: cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --all
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: rustup set profile minimal
+      - run: rustup show
+      - run: rustup component add clippy
+      - run: cargo clippy --all -- --deny warnings --allow clippy::unknown-clippy-lints
