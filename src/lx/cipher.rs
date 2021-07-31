@@ -3,7 +3,6 @@ pub fn decrypt(s: &str) -> String {
     String::from_utf8(bytes).unwrap()
 }
 
-#[allow(dead_code)]
 pub fn encrypt(s: &str) -> String {
     let bytes: Vec<_> = s.bytes().map(|b| b.wrapping_add(1)).collect();
     String::from_utf8(bytes).unwrap()
