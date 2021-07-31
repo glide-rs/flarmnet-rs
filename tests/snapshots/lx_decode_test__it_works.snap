@@ -1,0 +1,45 @@
+---
+source: tests/lx_decode_test.rs
+expression: decode_file(fixture)
+
+---
+Ok(
+    DecodedFile {
+        version: 28592,
+        records: [
+            Ok(
+                Record {
+                    flarm_id: "000000",
+                    pilot_name: "Müller",
+                    airfield: "D-2188",
+                    plane_type: "ASK-13",
+                    registration: "D-2188",
+                    call_sign: "",
+                    frequency: "123.150",
+                },
+            ),
+            Ok(
+                Record {
+                    flarm_id: "000001",
+                    pilot_name: "",
+                    airfield: "000000",
+                    plane_type: "Paraglider",
+                    registration: "000000",
+                    call_sign: "",
+                    frequency: "",
+                },
+            ),
+            Ok(
+                Record {
+                    flarm_id: "00000F",
+                    pilot_name: "",
+                    airfield: "D-9527",
+                    plane_type: "ASW 27",
+                    registration: "D-9527",
+                    call_sign: "X27",
+                    frequency: "",
+                },
+            ),
+        ],
+    },
+)

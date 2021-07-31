@@ -1,0 +1,8 @@
+---
+source: tests/lx_encode_test.rs
+expression: encode_file(&file)
+
+---
+Ok(
+    "=@ynm!wfstjpo>#2/1#!fodpejoh>#VUG.9#@?\u{b}=GMBSNOFU!Wfstjpo>#117gc1#?\u{b}\n=GMBSNEBUB!GmbsnJE>#111111#?\u{b}\n\n=OBNF?NĽmmfs=0OBNF?\u{b}\n\n=BJSGJFME?E.3299=0BJSGJFME?\u{b}\n\n=UZQF?BTL.24=0UZQF?\u{b}\n\n=SFH?E.3299=0SFH?\u{b}\n\n=DPNQJE?=0DPNQJE?\u{b}\n\n=GSFRVFODZ?234/261=0GSFRVFODZ?\u{b}\n=0GMBSNEBUB?\u{b}\n=GMBSNEBUB!GmbsnJE>#111112#?\u{b}\n\n=OBNF?=0OBNF?\u{b}\n\n=BJSGJFME?111111=0BJSGJFME?\u{b}\n\n=UZQF?Qbsbhmjefs=0UZQF?\u{b}\n\n=SFH?111111=0SFH?\u{b}\n\n=DPNQJE?=0DPNQJE?\u{b}\n\n=GSFRVFODZ?=0GSFRVFODZ?\u{b}\n=0GMBSNEBUB?\u{b}\n=GMBSNEBUB!GmbsnJE>#11111G#?\u{b}\n\n=OBNF?=0OBNF?\u{b}\n\n=BJSGJFME?E.:638=0BJSGJFME?\u{b}\n\n=UZQF?BTX!38=0UZQF?\u{b}\n\n=SFH?E.:638=0SFH?\u{b}\n\n=DPNQJE?Y38=0DPNQJE?\u{b}\n\n=GSFRVFODZ?=0GSFRVFODZ?\u{b}\n=0GMBSNEBUB?\u{b}=0GMBSNOFU?",
+)
