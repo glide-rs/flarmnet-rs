@@ -1,6 +1,8 @@
 mod decode;
 mod encode;
 mod fields;
+#[cfg(feature = "lx")]
+pub mod lx;
 
 pub use decode::*;
 pub use encode::*;
