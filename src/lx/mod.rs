@@ -22,7 +22,7 @@
 //! LXNav/Naviter file format. The [encode_file] function can be used to write
 //! such files.
 
-mod cipher;
+pub mod cipher;
 mod decode;
 mod encode;
 
