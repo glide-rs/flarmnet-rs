@@ -1,6 +1,6 @@
 [package]
 name = "flarmnet"
-version = "0.2.0"
+version = "0.3.0"
 description = "FlarmNet file decoder/encoder"
 authors = ["Tobias Bieniek <tobias.bieniek@gmail.com>"]
 license = "MIT/Apache-2.0"
