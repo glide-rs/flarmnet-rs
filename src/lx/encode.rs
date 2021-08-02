@@ -40,7 +40,7 @@ pub enum EncodeError {
 /// assert!(result.is_ok());
 /// ```
 pub fn encode_file(file: &File) -> Result<String, EncodeError> {
-    let mut writer = Writer::new_with_indent(Cursor::new(Vec::new()), 9u8, 1);
+    let mut writer = Writer::new_with_indent(Cursor::new(Vec::new()), 9u8, 0);
 
     writer.write_event(Event::Decl(BytesDecl::new(b"1.0", Some(b"UTF-8"), None)))?;
 
@@ -55,26 +55,32 @@ pub fn encode_file(file: &File) -> Result<String, EncodeError> {
                 .with_attributes(vec![("FlarmID".as_bytes(), record.flarm_id.as_bytes())]),
         ))?;
 
+        writer.write_event(Event::Text(BytesText::from_plain_str("\n\t")))?;
         writer.write_event(Event::Start(BytesStart::borrowed_name(b"NAME")))?;
         writer.write_event(Event::Text(BytesText::from_plain_str(&record.pilot_name)))?;
         writer.write_event(Event::End(BytesEnd::borrowed(b"NAME")))?;
 
+        writer.write_event(Event::Text(BytesText::from_plain_str("\n\t")))?;
         writer.write_event(Event::Start(BytesStart::borrowed_name(b"AIRFIELD")))?;
         writer.write_event(Event::Text(BytesText::from_plain_str(&record.airfield)))?;
         writer.write_event(Event::End(BytesEnd::borrowed(b"AIRFIELD")))?;
 
+        writer.write_event(Event::Text(BytesText::from_plain_str("\n\t")))?;
         writer.write_event(Event::Start(BytesStart::borrowed_name(b"TYPE")))?;
         writer.write_event(Event::Text(BytesText::from_plain_str(&record.plane_type)))?;
         writer.write_event(Event::End(BytesEnd::borrowed(b"TYPE")))?;
 
+        writer.write_event(Event::Text(BytesText::from_plain_str("\n\t")))?;
         writer.write_event(Event::Start(BytesStart::borrowed_name(b"REG")))?;
         writer.write_event(Event::Text(BytesText::from_plain_str(&record.registration)))?;
         writer.write_event(Event::End(BytesEnd::borrowed(b"REG")))?;
 
+        writer.write_event(Event::Text(BytesText::from_plain_str("\n\t")))?;
         writer.write_event(Event::Start(BytesStart::borrowed_name(b"COMPID")))?;
         writer.write_event(Event::Text(BytesText::from_plain_str(&record.call_sign)))?;
         writer.write_event(Event::End(BytesEnd::borrowed(b"COMPID")))?;
 
+        writer.write_event(Event::Text(BytesText::from_plain_str("\n\t")))?;
         writer.write_event(Event::Start(BytesStart::borrowed_name(b"FREQUENCY")))?;
         writer.write_event(Event::Text(BytesText::from_plain_str(&record.frequency)))?;
         writer.write_event(Event::End(BytesEnd::borrowed(b"FREQUENCY")))?;
