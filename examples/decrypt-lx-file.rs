@@ -9,10 +9,10 @@ fn main() -> anyhow::Result<()> {
     };
 
     let path = PathBuf::from(path);
-    let content = std::fs::read_to_string(&path)?;
+    let content = std::fs::read(&path)?;
 
     let xml_path = path.with_extension("xml");
-    let decrypted = flarmnet::lx::cipher::decrypt(&content)?;
+    let decrypted = flarmnet::lx::cipher::decrypt(&content);
     std::fs::write(&xml_path, &decrypted)?;
 
     Ok(())
