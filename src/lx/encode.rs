@@ -4,15 +4,12 @@ use minidom::quick_xml;
 use minidom::quick_xml::events::{BytesDecl, BytesEnd, BytesStart, BytesText, Event};
 use minidom::quick_xml::Writer;
 use std::io::Cursor;
-use std::string::FromUtf8Error;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum EncodeError {
     #[error(transparent)]
     Xml(#[from] quick_xml::Error),
-    #[error(transparent)]
-    Utf8(#[from] FromUtf8Error),
 }
 
 /// Encodes a FlarmNet file in LX format.
@@ -39,7 +36,7 @@ pub enum EncodeError {
 /// let result = flarmnet::lx::encode_file(&file);
 /// assert!(result.is_ok());
 /// ```
-pub fn encode_file(file: &File) -> Result<String, EncodeError> {
+pub fn encode_file(file: &File) -> Result<Vec<u8>, EncodeError> {
     let mut writer = Writer::new_with_indent(Cursor::new(Vec::new()), 9u8, 0);
 
     writer.write_event(Event::Decl(BytesDecl::new(b"1.0", Some(b"UTF-8"), None)))?;
@@ -91,5 +88,5 @@ pub fn encode_file(file: &File) -> Result<String, EncodeError> {
 
     let xml = writer.into_inner().into_inner();
 
-    Ok(String::from_utf8(encrypt(&xml))?)
+    Ok(encrypt(&xml))
 }
