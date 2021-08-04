@@ -23,7 +23,7 @@ fn main() -> anyhow::Result<()> {
 
     let new_path = path.with_file_name("lx.fln");
     let new_content = flarmnet::lx::encode_file(&file)?;
-    std::fs::write(&new_path, &new_content);
+    std::fs::write(&new_path, &new_content)?;
 
     Ok(())
 }
