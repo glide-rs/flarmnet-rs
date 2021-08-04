@@ -1,4 +1,4 @@
-use crate::lx::cipher::encrypt;
+use crate::lx::cipher;
 use crate::File;
 use minidom::quick_xml;
 use minidom::quick_xml::events::{BytesDecl, BytesEnd, BytesStart, BytesText, Event};
@@ -37,7 +37,8 @@ pub enum EncodeError {
 /// assert!(result.is_ok());
 /// ```
 pub fn encode_file(file: &File) -> Result<Vec<u8>, EncodeError> {
-    let mut writer = Writer::new_with_indent(Cursor::new(Vec::new()), 9u8, 0);
+    let cipher_writer = cipher::Writer::new(Cursor::new(Vec::new()));
+    let mut writer = Writer::new_with_indent(cipher_writer, 9u8, 0);
 
     writer.write_event(Event::Decl(BytesDecl::new(b"1.0", Some(b"UTF-8"), None)))?;
 
@@ -86,7 +87,7 @@ pub fn encode_file(file: &File) -> Result<Vec<u8>, EncodeError> {
     }
     writer.write_event(Event::End(BytesEnd::borrowed(b"FLARMNET")))?;
 
-    let xml = writer.into_inner().into_inner();
+    let xml = writer.into_inner().into_inner().into_inner();
 
-    Ok(encrypt(&xml))
+    Ok(xml)
 }
