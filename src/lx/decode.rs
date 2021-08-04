@@ -1,7 +1,7 @@
 use crate::lx::cipher;
 use crate::Record;
 use minidom::{quick_xml, Element, NSChoice};
-use std::io::Cursor;
+use std::io::BufReader;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -58,9 +58,9 @@ pub struct DecodedFile {
 /// assert_eq!(result.records.iter().filter(|it| it.is_ok()).count(), 3);
 /// ```
 pub fn decode_file(file: &[u8]) -> Result<DecodedFile, DecodeError> {
-    let decrypted = cipher::decrypt(file);
+    let reader = cipher::Reader::new(file);
 
-    let mut reader = quick_xml::Reader::from_reader(Cursor::new(&decrypted));
+    let mut reader = quick_xml::Reader::from_reader(BufReader::new(reader));
     let root: Element = Element::from_reader(&mut reader)?;
     if root.name() != "FLARMNET" {
         return Err(DecodeError::MissingElement("FLARMNET".to_string()));

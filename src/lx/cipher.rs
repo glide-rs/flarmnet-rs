@@ -1,14 +1,42 @@
-pub fn decrypt(s: &[u8]) -> Vec<u8> {
-    s.iter().map(|b| b.wrapping_sub(1)).collect()
-}
+use std::io::Read;
 
 pub fn encrypt(s: &[u8]) -> Vec<u8> {
     s.iter().map(|b| b.wrapping_add(1)).collect()
 }
 
+#[derive(Clone)]
+pub struct Reader<R: Read> {
+    inner: R,
+}
+
+impl<R: Read> Reader<R> {
+    pub fn new(inner: R) -> Self {
+        Self { inner }
+    }
+}
+
+impl<R: Read> Read for Reader<R> {
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        self.inner.read(buf).map(|result| {
+            for byte in buf.iter_mut() {
+                *byte = byte.wrapping_sub(1);
+            }
+            result
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{decrypt, encrypt};
+    use super::{encrypt, Reader};
+    use std::io::copy;
+
+    fn decrypt(s: &[u8]) -> Vec<u8> {
+        let mut reader = Reader::new(s);
+        let mut vec = Vec::with_capacity(s.len());
+        copy(&mut reader, &mut vec).unwrap();
+        vec
+    }
 
     #[test]
     fn decryption_works() {
