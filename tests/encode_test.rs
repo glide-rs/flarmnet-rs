@@ -12,5 +12,5 @@ fn it_works() {
             .filter_map(|it| it.ok())
             .collect(),
     };
-    assert_eq!(encode_file(&file).unwrap(), fixture);
+    assert_eq!(encode_file(&file).unwrap(), fixture.as_bytes());
 }
