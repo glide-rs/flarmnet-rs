@@ -32,11 +32,11 @@ pub enum EncodeError {
 /// };
 ///
 /// let result = flarmnet::xcsoar::encode_file(&file).unwrap();
-/// assert_eq!(result, r#"00007b
+/// assert_eq!(result, br#"00007b
 /// 334545334337546f62696173204269656e69656b2020202020202045444b4120202020202020202020202020202020204c5336612020202020202020202020202020202020442d30383136205347203133302e353330
 /// "#);
 /// ```
-pub fn encode_file(file: &File) -> Result<String, EncodeError> {
+pub fn encode_file(file: &File) -> Result<Vec<u8>, EncodeError> {
     let version = format!("{:06x?}", file.version);
     let records = file
         .records
@@ -45,7 +45,8 @@ pub fn encode_file(file: &File) -> Result<String, EncodeError> {
         .collect::<Result<Vec<_>, _>>()?
         .join("\n");
 
-    Ok(format!("{}\n{}\n", version, records))
+    let content = format!("{}\n{}\n", version, records);
+    Ok(content.into_bytes())
 }
 
 /// Encodes a single FlarmNet file record.
