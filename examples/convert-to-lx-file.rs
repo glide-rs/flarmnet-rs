@@ -1,5 +1,7 @@
 use anyhow::anyhow;
 use std::env;
+use std::fs::File;
+use std::io::BufWriter;
 use std::path::PathBuf;
 
 fn main() -> anyhow::Result<()> {
@@ -22,8 +24,10 @@ fn main() -> anyhow::Result<()> {
     };
 
     let new_path = path.with_file_name("lx.fln");
-    let new_content = flarmnet::lx::encode_file(&file)?;
-    std::fs::write(&new_path, &new_content)?;
+    let new_file = File::create(new_path)?;
+
+    let mut writer = flarmnet::lx::Writer::new(BufWriter::new(new_file));
+    writer.write(&file)?;
 
     Ok(())
 }
