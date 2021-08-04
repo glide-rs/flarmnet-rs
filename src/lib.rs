@@ -7,7 +7,7 @@ pub mod lx;
 pub use decode::*;
 pub use encode::*;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Record {
     pub flarm_id: String,
     pub pilot_name: String,
@@ -18,7 +18,7 @@ pub struct Record {
     pub frequency: String,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct File {
     pub version: u32,
     pub records: Vec<Record>,
