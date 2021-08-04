@@ -2,7 +2,7 @@ use flarmnet::lx::{decode_file, encode_file};
 
 #[test]
 fn it_works() {
-    let fixture = include_str!("fixtures/lx.fln");
+    let fixture = include_bytes!("fixtures/lx.fln");
     let decoded = decode_file(fixture).unwrap();
     let file = flarmnet::File {
         version: decoded.version,

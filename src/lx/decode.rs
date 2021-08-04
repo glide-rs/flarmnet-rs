@@ -2,15 +2,12 @@ use crate::lx::cipher;
 use crate::Record;
 use minidom::{quick_xml, Element, NSChoice};
 use std::io::Cursor;
-use std::string::FromUtf8Error;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum DecodeError {
     #[error(transparent)]
     Xml(#[from] minidom::Error),
-    #[error(transparent)]
-    Utf8(#[from] FromUtf8Error),
     #[error("missing XML element: {0}")]
     MissingElement(String),
     #[error("missing file version")]
@@ -35,8 +32,8 @@ pub struct DecodedFile {
 ///
 /// ```
 /// # use flarmnet::Record;
-/// let file = r#"=@ynm!wfstjpo>#2/1#!fodpejoh>#VUG.9#@?\u{b}=GMBSNOFU!Wfstjpo>#117gc1#?\u{b}=GMBSNEBUB!GmbsnJE>#111111#?\u{b}
-/// =OBNF?NĽmmfs=0OBNF?\u{b}
+/// let file = br#"=@ynm!wfstjpo>#2/1#!fodpejoh>#VUG.9#@?\u{b}=GMBSNOFU!Wfstjpo>#117gc1#?\u{b}=GMBSNEBUB!GmbsnJE>#111111#?\u{b}
+/// =OBNF?Nvmmfs=0OBNF?\u{b}
 /// =BJSGJFME?E.3299=0BJSGJFME?\u{b}
 /// =UZQF?BTL.24=0UZQF?\u{b}
 /// =SFH?E.3299=0SFH?\u{b}
@@ -60,8 +57,8 @@ pub struct DecodedFile {
 /// assert_eq!(result.version, 28592);
 /// assert_eq!(result.records.iter().filter(|it| it.is_ok()).count(), 3);
 /// ```
-pub fn decode_file(file: &str) -> Result<DecodedFile, DecodeError> {
-    let decrypted = cipher::decrypt(file.as_bytes());
+pub fn decode_file(file: &[u8]) -> Result<DecodedFile, DecodeError> {
+    let decrypted = cipher::decrypt(file);
 
     let mut reader = quick_xml::Reader::from_reader(Cursor::new(&decrypted));
     let root: Element = Element::from_reader(&mut reader)?;
@@ -156,7 +153,7 @@ mod tests {
 
     #[test]
     fn decoding_fails_for_empty_file() {
-        let file = "";
+        let file = b"";
         assert_debug_snapshot!(decode_file(file).unwrap_err(), @r###"
         Xml(
             EndOfDocument,
@@ -166,7 +163,7 @@ mod tests {
 
     #[test]
     fn decoding_fails_for_invalid_file() {
-        let file = "foo";
+        let file = b"foo";
         assert_debug_snapshot!(decode_file(file).unwrap_err(), @r###"
         Xml(
             EndOfDocument,
@@ -181,7 +178,6 @@ mod tests {
                 <FOO>
                 </FOO>"#,
         );
-        let file = String::from_utf8(file).unwrap();
         assert_debug_snapshot!(decode_file(&file).unwrap_err(), @r###"
         MissingElement(
             "FLARMNET",
@@ -196,7 +192,6 @@ mod tests {
                 <FLARMNET>
                 </FLARMNET>"#,
         );
-        let file = String::from_utf8(file).unwrap();
         assert_debug_snapshot!(decode_file(&file).unwrap_err(), @"MissingVersion");
     }
 
@@ -207,7 +202,6 @@ mod tests {
                 <FLARMNET Version="foo">
                 </FLARMNET>"#,
         );
-        let file = String::from_utf8(file).unwrap();
         assert_debug_snapshot!(decode_file(&file).unwrap_err(), @r###"
         InvalidVersion(
             "foo",
