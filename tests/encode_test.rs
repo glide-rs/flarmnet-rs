@@ -1,4 +1,4 @@
-use flarmnet::{decode_file, encode_file};
+use flarmnet::xcsoar::{decode_file, encode_file};
 
 #[test]
 fn it_works() {

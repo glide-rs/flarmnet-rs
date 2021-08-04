@@ -10,7 +10,7 @@ fn main() -> anyhow::Result<()> {
 
     let path = PathBuf::from(path);
     let content = std::fs::read_to_string(&path)?;
-    let decoded = flarmnet::decode_file(&content)?;
+    let decoded = flarmnet::xcsoar::decode_file(&content)?;
 
     let file = flarmnet::File {
         version: decoded.version,
