@@ -1,11 +1,7 @@
-mod decode;
-mod encode;
-mod fields;
 #[cfg(feature = "lx")]
 pub mod lx;
-
-pub use decode::*;
-pub use encode::*;
+#[cfg(feature = "xcsoar")]
+pub mod xcsoar;
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Record {

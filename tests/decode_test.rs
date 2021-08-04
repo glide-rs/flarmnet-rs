@@ -1,4 +1,4 @@
-use flarmnet::decode_file;
+use flarmnet::xcsoar::decode_file;
 use insta::assert_debug_snapshot;
 
 #[test]

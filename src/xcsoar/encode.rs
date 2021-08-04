@@ -1,4 +1,4 @@
-use crate::fields::*;
+use super::fields::*;
 use crate::{File, Record};
 use encoding_rs::mem::{encode_latin1_lossy, is_str_latin1};
 use thiserror::Error;
@@ -31,7 +31,7 @@ pub enum EncodeError {
 ///     ]
 /// };
 ///
-/// let result = flarmnet::encode_file(&file).unwrap();
+/// let result = flarmnet::xcsoar::encode_file(&file).unwrap();
 /// assert_eq!(result, r#"00007b
 /// 334545334337546f62696173204269656e69656b2020202020202045444b4120202020202020202020202020202020204c5336612020202020202020202020202020202020442d30383136205347203133302e353330
 /// "#);
@@ -65,7 +65,7 @@ pub fn encode_file(file: &File) -> Result<String, EncodeError> {
 /// };
 ///
 /// assert_eq!(
-///     flarmnet::encode_record(&record).unwrap(),
+///     flarmnet::xcsoar::encode_record(&record).unwrap(),
 ///     "334545334337546f62696173204269656e69656b2020202020202045444b4120202020202020202020202020202020204c5336612020202020202020202020202020202020442d30383136205347203133302e353330",
 /// );
 /// ```
@@ -104,8 +104,7 @@ fn encode_str(value: &str, length: usize) -> Result<String, EncodeError> {
 
 #[cfg(test)]
 mod tests {
-    use super::encode_str;
-    use crate::EncodeError;
+    use super::{encode_str, EncodeError};
 
     #[test]
     fn encoding_works() {

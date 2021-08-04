@@ -1,4 +1,4 @@
-use crate::fields::*;
+use super::fields::*;
 use crate::Record;
 use encoding_rs::mem::decode_latin1;
 use thiserror::Error;
@@ -35,7 +35,7 @@ pub struct DecodedFile {
 /// 303030303066202020202020202020202020202020202020202020442d39353237202020202020202020202020202020415357203237202020202020202020202020202020442d393532372058323720202020202020
 /// "#;
 ///
-/// let result = flarmnet::decode_file(file).unwrap();
+/// let result = flarmnet::xcsoar::decode_file(file).unwrap();
 /// assert_eq!(result.version, 28592);
 /// assert_eq!(result.records.iter().filter(|it| it.is_ok()).count(), 3);
 /// ```
@@ -62,7 +62,7 @@ pub fn decode_file(file: &str) -> Result<DecodedFile, DecodeError> {
 /// # use flarmnet::Record;
 /// let line = "334545334337546f62696173204269656e69656b2020202020202045444b4120202020202020202020202020202020204c5336612020202020202020202020202020202020442d30383136205347203133302e353330";
 ///
-/// let result = flarmnet::decode_record(line);
+/// let result = flarmnet::xcsoar::decode_record(line);
 /// assert_eq!(result.unwrap(), Record {
 ///     flarm_id: "3EE3C7".to_string(),
 ///     pilot_name: "Tobias Bieniek".to_string(),
@@ -116,7 +116,7 @@ fn decode_str(value: &str) -> Result<String, DecodeError> {
 
 #[cfg(test)]
 mod tests {
-    use crate::decode::{decode_file, decode_record, DecodeError};
+    use super::{decode_file, decode_record, DecodeError};
 
     #[test]
     fn decoding_fails_for_empty_file() {
