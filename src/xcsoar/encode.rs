@@ -3,7 +3,7 @@ use crate::{File, Record};
 use encoding_rs::mem::{encode_latin1_lossy, is_str_latin1};
 use thiserror::Error;
 
-#[derive(Error, Debug, Eq, PartialEq)]
+#[derive(Error, Debug)]
 pub enum EncodeError {
     // the value could not be converted to valid latin1
     #[error("invalid encoding: {0}")]
@@ -104,7 +104,8 @@ fn encode_str(value: &str, length: usize) -> Result<String, EncodeError> {
 
 #[cfg(test)]
 mod tests {
-    use super::{encode_str, EncodeError};
+    use super::encode_str;
+    use insta::assert_debug_snapshot;
 
     #[test]
     fn encoding_works() {
@@ -115,9 +116,12 @@ mod tests {
 
     #[test]
     fn encoding_fails_for_non_latin1() {
-        assert_eq!(
+        assert_debug_snapshot!(
             encode_str("😅", 7).unwrap_err(),
-            EncodeError::InvalidEncoding("😅".to_string())
-        );
+            @r###"
+            InvalidEncoding(
+                "😅",
+            )
+            "###);
     }
 }
