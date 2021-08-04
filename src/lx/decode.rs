@@ -146,10 +146,18 @@ fn convert(element: &Element) -> Result<Record, DecodeError> {
 
 #[cfg(test)]
 mod tests {
-    use crate::lx::cipher::encrypt;
+    use crate::lx::cipher::Writer;
     use crate::lx::decode::{convert, decode_file};
     use insta::assert_debug_snapshot;
     use minidom::Element;
+    use std::io::copy;
+
+    fn encrypt(mut s: &[u8]) -> Vec<u8> {
+        let vec = Vec::with_capacity(s.len());
+        let mut writer = Writer::new(vec);
+        copy(&mut s, &mut writer).unwrap();
+        writer.into_inner()
+    }
 
     #[test]
     fn decoding_fails_for_empty_file() {

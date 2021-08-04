@@ -1,8 +1,4 @@
-use std::io::Read;
-
-pub fn encrypt(s: &[u8]) -> Vec<u8> {
-    s.iter().map(|b| b.wrapping_add(1)).collect()
-}
+use std::io::{Read, Write};
 
 #[derive(Clone)]
 pub struct Reader<R: Read> {
@@ -26,9 +22,35 @@ impl<R: Read> Read for Reader<R> {
     }
 }
 
+#[derive(Clone)]
+pub struct Writer<W: Write> {
+    inner: W,
+}
+
+impl<W: Write> Writer<W> {
+    pub fn new(inner: W) -> Self {
+        Self { inner }
+    }
+
+    pub fn into_inner(self) -> W {
+        self.inner
+    }
+}
+
+impl<W: Write> Write for Writer<W> {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        let new_buf: Vec<_> = buf.iter().map(|b| b.wrapping_add(1)).collect();
+        self.inner.write(&new_buf)
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        self.inner.flush()
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{encrypt, Reader};
+    use super::{Reader, Writer};
     use std::io::copy;
 
     fn decrypt(s: &[u8]) -> Vec<u8> {
@@ -36,6 +58,13 @@ mod tests {
         let mut vec = Vec::with_capacity(s.len());
         copy(&mut reader, &mut vec).unwrap();
         vec
+    }
+
+    fn encrypt(mut s: &[u8]) -> Vec<u8> {
+        let vec = Vec::with_capacity(s.len());
+        let mut writer = Writer::new(vec);
+        copy(&mut s, &mut writer).unwrap();
+        writer.into_inner()
     }
 
     #[test]
