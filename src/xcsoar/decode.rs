@@ -3,7 +3,7 @@ use crate::Record;
 use encoding_rs::mem::decode_latin1;
 use thiserror::Error;
 
-#[derive(Error, Debug, Eq, PartialEq)]
+#[derive(Error, Debug)]
 pub enum DecodeError {
     #[error("missing file version")]
     MissingVersion,
@@ -17,7 +17,7 @@ pub enum DecodeError {
     InvalidFlarmId(String),
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug)]
 pub struct DecodedFile {
     pub version: u32,
     pub records: Vec<Result<Record, DecodeError>>,
@@ -116,65 +116,90 @@ fn decode_str(value: &str) -> Result<String, DecodeError> {
 
 #[cfg(test)]
 mod tests {
-    use super::{decode_file, decode_record, DecodeError};
+    use super::{decode_file, decode_record};
+    use insta::assert_debug_snapshot;
 
     #[test]
     fn decoding_fails_for_empty_file() {
         let file = "";
-        assert_eq!(decode_file(file).unwrap_err(), DecodeError::MissingVersion);
+        assert_debug_snapshot!(decode_file(file).unwrap_err(), @"MissingVersion");
     }
 
     #[test]
     fn decoding_fails_for_invalid_file_version() {
         let file = "0123x4\n";
-        assert_eq!(
+        assert_debug_snapshot!(
             decode_file(file).unwrap_err(),
-            DecodeError::InvalidVersion("0123x4".to_string())
+            @r###"
+        InvalidVersion(
+            "0123x4",
+        )
+        "###
         );
     }
 
     #[test]
     fn decoding_fails_for_short_line() {
         let row = "3030303030304dfc6c6c6572202020202020202020202020202020442d3231383820202020202020202020202020202041534b2d3133202020202020202020202020202020442d32313838202020203132332e31353";
-        assert_eq!(
+        assert_debug_snapshot!(
             decode_record(row).unwrap_err(),
-            DecodeError::UnexpectedLineLength(171)
+            @r###"
+        UnexpectedLineLength(
+            171,
+        )
+        "###
         );
     }
 
     #[test]
     fn decoding_fails_for_long_line() {
         let row = "3030303030304dfc6c6c6572202020202020202020202020202020442d3231383820202020202020202020202020202041534b2d3133202020202020202020202020202020442d32313838202020203132332e3135301";
-        assert_eq!(
+        assert_debug_snapshot!(
             decode_record(row).unwrap_err(),
-            DecodeError::UnexpectedLineLength(173)
+            @r###"
+        UnexpectedLineLength(
+            173,
+        )
+        "###
         );
     }
 
     #[test]
     fn decoding_fails_for_unexpected_characters() {
         let row = "30XX303030304dfc6c6c6572202020202020202020202020202020442d3231383820202020202020202020202020202041534b2d3133202020202020202020202020202020442d32313838202020203132332e313530";
-        assert_eq!(
+        assert_debug_snapshot!(
             decode_record(row).unwrap_err(),
-            DecodeError::UnexpectedCharacter("30XX30303030".to_string())
+            @r###"
+        UnexpectedCharacter(
+            "30XX30303030",
+        )
+        "###
         );
     }
 
     #[test]
     fn decoding_fails_for_empty_flarm_id() {
         let row = "2020202020204dfc6c6c6572202020202020202020202020202020442d3231383820202020202020202020202020202041534b2d3133202020202020202020202020202020442d32313838202020203132332e313530";
-        assert_eq!(
+        assert_debug_snapshot!(
             decode_record(row).unwrap_err(),
-            DecodeError::InvalidFlarmId("".to_string())
+            @r###"
+        InvalidFlarmId(
+            "",
+        )
+        "###
         );
     }
 
     #[test]
     fn decoding_fails_for_invalid_flarm_id() {
         let row = "3030573030304dfc6c6c6572202020202020202020202020202020442d3231383820202020202020202020202020202041534b2d3133202020202020202020202020202020442d32313838202020203132332e313530";
-        assert_eq!(
+        assert_debug_snapshot!(
             decode_record(row).unwrap_err(),
-            DecodeError::InvalidFlarmId("00W000".to_string())
+            @r###"
+        InvalidFlarmId(
+            "00W000",
+        )
+        "###
         );
     }
 }
