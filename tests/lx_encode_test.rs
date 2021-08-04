@@ -1,5 +1,4 @@
 use flarmnet::lx::{decode_file, encode_file};
-use insta::assert_debug_snapshot;
 
 #[test]
 fn it_works() {
