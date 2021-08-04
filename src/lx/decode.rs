@@ -1,6 +1,7 @@
 use crate::lx::cipher;
 use crate::Record;
-use minidom::{Element, NSChoice};
+use minidom::{quick_xml, Element, NSChoice};
+use std::io::Cursor;
 use std::string::FromUtf8Error;
 use thiserror::Error;
 
@@ -60,9 +61,10 @@ pub struct DecodedFile {
 /// assert_eq!(result.records.iter().filter(|it| it.is_ok()).count(), 3);
 /// ```
 pub fn decode_file(file: &str) -> Result<DecodedFile, DecodeError> {
-    let decrypted = cipher::decrypt(file)?;
+    let decrypted = cipher::decrypt(file.as_bytes());
 
-    let root: Element = decrypted.parse()?;
+    let mut reader = quick_xml::Reader::from_reader(Cursor::new(&decrypted));
+    let root: Element = Element::from_reader(&mut reader)?;
     if root.name() != "FLARMNET" {
         return Err(DecodeError::MissingElement("FLARMNET".to_string()));
     }
@@ -175,11 +177,11 @@ mod tests {
     #[test]
     fn decoding_fails_for_missing_root_element() {
         let file = encrypt(
-            r#"<?xml version="1.0" encoding="UTF-8"?>
+            br#"<?xml version="1.0" encoding="UTF-8"?>
                 <FOO>
                 </FOO>"#,
-        )
-        .unwrap();
+        );
+        let file = String::from_utf8(file).unwrap();
         assert_debug_snapshot!(decode_file(&file).unwrap_err(), @r###"
         MissingElement(
             "FLARMNET",
@@ -190,22 +192,22 @@ mod tests {
     #[test]
     fn decoding_fails_for_missing_file_version() {
         let file = encrypt(
-            r#"<?xml version="1.0" encoding="UTF-8"?>
+            br#"<?xml version="1.0" encoding="UTF-8"?>
                 <FLARMNET>
                 </FLARMNET>"#,
-        )
-        .unwrap();
+        );
+        let file = String::from_utf8(file).unwrap();
         assert_debug_snapshot!(decode_file(&file).unwrap_err(), @"MissingVersion");
     }
 
     #[test]
     fn decoding_fails_for_invalid_file_version() {
         let file = encrypt(
-            r#"<?xml version="1.0" encoding="UTF-8"?>
+            br#"<?xml version="1.0" encoding="UTF-8"?>
                 <FLARMNET Version="foo">
                 </FLARMNET>"#,
-        )
-        .unwrap();
+        );
+        let file = String::from_utf8(file).unwrap();
         assert_debug_snapshot!(decode_file(&file).unwrap_err(), @r###"
         InvalidVersion(
             "foo",
