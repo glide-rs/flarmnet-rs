@@ -22,4 +22,4 @@ thiserror = "1.0.30"
 
 [dev-dependencies]
 anyhow = "1.0.52"
-insta = "1.9.0"
+insta = "1.10.0"
