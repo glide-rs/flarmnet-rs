@@ -92,7 +92,7 @@ impl<W: Write> Writer<W> {
             return Err(EncodeError::InvalidEncoding(value.to_string()));
         }
 
-        let bytes = encode_latin1_lossy(&value);
+        let bytes = encode_latin1_lossy(value);
         for byte in bytes.iter().take(length) {
             self.writer.write_fmt(format_args!("{:02x?}", byte))?;
         }

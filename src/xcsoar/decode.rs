@@ -48,7 +48,7 @@ pub fn decode_file(file: &str) -> Result<DecodedFile, DecodeError> {
 
     let records = lines
         .filter(|it| !it.is_empty())
-        .map(|it| decode_record(it))
+        .map(decode_record)
         .collect();
 
     Ok(DecodedFile { version, records })

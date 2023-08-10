@@ -5,7 +5,7 @@ use std::io::BufWriter;
 use std::path::PathBuf;
 
 fn main() -> anyhow::Result<()> {
-    let path = match env::args().skip(1).next() {
+    let path = match env::args().nth(1) {
         None => return Err(anyhow!("Missing PATH argument")),
         Some(path) => path,
     };
