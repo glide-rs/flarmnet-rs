@@ -73,7 +73,7 @@ pub fn decode_file(file: &[u8]) -> Result<DecodedFile, DecodeError> {
     let records = root
         .children()
         .filter(|child| child.name() == "FLARMDATA")
-        .map(|child| convert(child))
+        .map(convert)
         .collect();
 
     Ok(DecodedFile { version, records })
