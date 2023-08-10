@@ -1,17 +1,23 @@
-use anyhow::anyhow;
-use std::env;
+use clap::Parser;
 use std::fs::File;
 use std::io::BufWriter;
 use std::path::PathBuf;
 
-fn main() -> anyhow::Result<()> {
-    let path = match env::args().nth(1) {
-        None => return Err(anyhow!("Missing PATH argument")),
-        Some(path) => path,
-    };
+#[derive(Debug, Parser)]
+struct Options {
+    /// Path to the XCSoar format FLN file
+    input: PathBuf,
 
-    let path = PathBuf::from(path);
-    let content = std::fs::read_to_string(&path)?;
+    /// Path to which the LX format FLN file will be written
+    #[arg(long)]
+    output: Option<PathBuf>,
+}
+
+fn main() -> anyhow::Result<()> {
+    let options = Options::parse();
+
+    let input_path = &options.input;
+    let content = std::fs::read_to_string(input_path)?;
     let decoded = flarmnet::xcsoar::decode_file(&content)?;
 
     let file = flarmnet::File {
@@ -23,7 +29,9 @@ fn main() -> anyhow::Result<()> {
             .collect(),
     };
 
-    let new_path = path.with_file_name("lx.fln");
+    let new_path = options
+        .output
+        .unwrap_or_else(|| input_path.with_file_name("lx.fln"));
     let new_file = File::create(new_path)?;
 
     let mut writer = flarmnet::lx::Writer::new(BufWriter::new(new_file));
