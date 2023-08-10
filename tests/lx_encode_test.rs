@@ -1,4 +1,5 @@
 use flarmnet::lx::{decode_file, encode_file};
+use insta::assert_snapshot;
 
 #[test]
 fn it_works() {
@@ -12,5 +13,6 @@ fn it_works() {
             .filter_map(|it| it.ok())
             .collect(),
     };
-    assert_eq!(encode_file(&file).unwrap(), fixture);
+    let encoded = encode_file(&file).unwrap();
+    assert_snapshot!(String::from_utf8_lossy(&encoded));
 }
