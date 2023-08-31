@@ -23,5 +23,5 @@ thiserror = "1.0.47"
 
 [dev-dependencies]
 anyhow = "1.0.75"
-clap = { version = "4.4.1", features = ["derive"] }
+clap = { version = "4.4.2", features = ["derive"] }
 insta = "1.31.0"
