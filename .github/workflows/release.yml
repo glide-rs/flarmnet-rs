@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3.5.3
+      - uses: actions/checkout@v6.0.2
       - run: rustup set profile minimal
       - run: rustup show
       - run: cargo publish

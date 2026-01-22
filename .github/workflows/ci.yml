@@ -11,7 +11,7 @@ jobs:
     name: Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.3
+      - uses: actions/checkout@v6.0.2
       - run: rustup set profile minimal
       - run: rustup show
       - run: cargo check --all-targets
@@ -22,7 +22,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.3
+      - uses: actions/checkout@v6.0.2
       - run: rustup set profile minimal
       - run: rustup show
       - run: cargo test
@@ -31,7 +31,7 @@ jobs:
     name: Rustfmt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.3
+      - uses: actions/checkout@v6.0.2
       - run: rustup set profile minimal
       - run: rustup show
       - run: rustup component add rustfmt
@@ -41,7 +41,7 @@ jobs:
     name: Clippy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.3
+      - uses: actions/checkout@v6.0.2
       - run: rustup set profile minimal
       - run: rustup show
       - run: rustup component add clippy
