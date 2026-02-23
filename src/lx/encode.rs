@@ -9,6 +9,8 @@ use thiserror::Error;
 pub enum EncodeError {
     #[error(transparent)]
     Xml(#[from] quick_xml::Error),
+    #[error(transparent)]
+    Io(#[from] std::io::Error),
 }
 
 /// Encodes a FlarmNet file in LX format.
