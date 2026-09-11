@@ -11,6 +11,12 @@ pub enum EncodeError {
     Xml(#[from] quick_xml::Error),
 }
 
+impl From<std::io::Error> for EncodeError {
+    fn from(error: std::io::Error) -> Self {
+        Self::Xml(error.into())
+    }
+}
+
 /// Encodes a FlarmNet file in LX format.
 ///
 /// # Examples
@@ -65,16 +71,15 @@ impl<W: Write> Writer<W> {
 
         let version = format!("{:06x?}", file.version);
         writer.write_event(Event::Start(
-            BytesStart::new("FLARMNET")
-                .with_attributes(vec![("Version".as_bytes(), version.as_bytes())]),
+            BytesStart::new("FLARMNET").with_attributes([("Version", version.as_str())]),
         ))?;
         writer.write_event(Event::Text(BytesText::from_escaped("\n")))?;
 
         for record in &file.records {
-            writer
-                .write_event(Event::Start(BytesStart::new("FLARMDATA").with_attributes(
-                    vec![("FlarmID".as_bytes(), record.flarm_id.as_bytes())],
-                )))?;
+            writer.write_event(Event::Start(
+                BytesStart::new("FLARMDATA")
+                    .with_attributes([("FlarmID", record.flarm_id.as_str())]),
+            ))?;
 
             if !record.pilot_name.is_empty() {
                 writer.write_event(Event::Start(BytesStart::new("NAME")))?;
