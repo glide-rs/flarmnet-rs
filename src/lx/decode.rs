@@ -146,8 +146,9 @@ fn convert(element: &Element) -> Result<Record, DecodeError> {
 
 #[cfg(test)]
 mod tests {
+    use crate::Record;
     use crate::lx::cipher::Writer;
-    use crate::lx::decode::{convert, decode_file};
+    use crate::lx::decode::{DecodeError, convert, decode_file};
     use insta::assert_debug_snapshot;
     use minidom::Element;
     use std::io::copy;
@@ -215,6 +216,77 @@ mod tests {
             "foo",
         )
         "###);
+    }
+
+    #[test]
+    fn decoding_preserves_supported_text_forms() {
+        let file = encrypt(
+            br#"<FLARMNET Version="012345">
+                <FLARMDATA FlarmID="c0ffee">
+                    <NAME>Jane &amp; John</NAME>
+                    <AIRFIELD><![CDATA[ED&KA]]></AIRFIELD>
+                    <TYPE>ASG &#x32;9</TYPE>
+                    <REG/>
+                    <FREQUENCY></FREQUENCY>
+                    <IGNORED>ignored</IGNORED>
+                    <WRAPPER><COMPID>nested</COMPID></WRAPPER>
+                </FLARMDATA>
+            </FLARMNET>"#,
+        );
+
+        let decoded = decode_file(&file).unwrap();
+        let record = decoded.records.into_iter().next().unwrap().unwrap();
+
+        assert_eq!(
+            record,
+            Record {
+                flarm_id: "c0ffee".to_string(),
+                pilot_name: "Jane & John".to_string(),
+                airfield: "ED&KA".to_string(),
+                plane_type: "ASG 29".to_string(),
+                registration: String::new(),
+                call_sign: String::new(),
+                frequency: String::new(),
+            }
+        );
+    }
+
+    #[test]
+    fn decoding_preserves_record_errors() {
+        let file = encrypt(
+            br#"<FLARMNET Version="012345">
+                <FLARMDATA FlarmID="c0ffee"/>
+                <FLARMDATA/>
+                <FLARMDATA FlarmID="invalid"/>
+                <FLARMDATA FlarmID="f00baa"/>
+            </FLARMNET>"#,
+        );
+
+        let decoded = decode_file(&file).unwrap();
+
+        let [
+            Ok(first),
+            Err(DecodeError::MissingFlarmId),
+            Err(DecodeError::InvalidFlarmId(id)),
+            Ok(last),
+        ] = decoded.records.as_slice()
+        else {
+            panic!("unexpected records: {:?}", decoded.records);
+        };
+        assert_eq!(first.flarm_id, "c0ffee");
+        assert_eq!(id, "invalid");
+        assert_eq!(last.flarm_id, "f00baa");
+    }
+
+    #[test]
+    fn decoding_rejects_malformed_xml() {
+        let file = encrypt(
+            br#"<FLARMNET Version="012345">
+                <FLARMDATA FlarmID="c0ffee">
+            </FLARMNET>"#,
+        );
+
+        assert!(matches!(decode_file(&file), Err(DecodeError::Xml(_))));
     }
 
     #[test]
